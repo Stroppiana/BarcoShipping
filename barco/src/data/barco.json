@@ -1,0 +1,26 @@
+[
+  {
+    "id_barco": 1,
+    "nombre": "Oceanus",
+    "imagen": "../../public/assets/img/barco1.jpg",
+    "descripcion": "Oceanus es un barco carguero de gran tamaño, diseñado para transportar una variedad de mercancías a través de largas distancias en alta mar."
+  },
+  {
+    "id_barco": 2,
+    "nombre": "Venture",
+    "imagen": "../../public/assets/img/barco2.jpg",
+    "descripcion": "Venture es conocido por su capacidad de carga excepcional y su eficiencia en el transporte marítimo internacional."
+  },
+  {
+    "id_barco": 3,
+    "nombre": "Atlantis",
+    "imagen": "../../public/assets/img/barco3.jpg",
+    "descripcion": "Atlantis se destaca por su robustez y fiabilidad, siendo una opción preferida para el transporte de carga a granel y contenedores."
+  },
+  {
+    "id_barco": 4,
+    "nombre": "Liberty",
+    "imagen": "../../public/assets/img/barco4.jpg",
+    "descripcion": "Liberty es reconocido por su capacidad de navegación en diversas condiciones marítimas y su capacidad para transportar grandes volúmenes de carga."
+  }
+]
