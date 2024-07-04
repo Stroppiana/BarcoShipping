@@ -1,5 +1,16 @@
+import { useState, useEffect } from 'react';
+
+
 export function User(){
 
+
+  const [usuarios, setUsuarios] = useState([]);
+
+  useEffect(() => {
+    // Obtenemos los usuarios del localStorage
+    const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios')) || [];
+    setUsuarios(usuariosGuardados);
+  }, []);
 
     return(
         <>
@@ -15,22 +26,17 @@ export function User(){
             </tr>
           </thead>
         
-          <tbody id="envios">
-           
-              <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+          <tbody>
+            {usuarios.map((usuario, index) => (
+              <tr key={index}>
+                <td>{usuario.id_user}</td>
+                <td>{usuario.nombre}</td>
+                <td>{usuario.email}</td>
+                <td>{usuario.rol}</td>
               </tr>
-          
+            ))}
           </tbody>
          
-
-        {/* {usuario?.rol === 'admin' && (
-
-          
-        )} */}
         </table>
       </div>
         </>

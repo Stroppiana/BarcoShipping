@@ -84,8 +84,9 @@ export function Envio() {
   return (
     <>
     <section className="container">
-    <h2>Bienvenido {usuario ? usuario.nombre : 'Invitado'}</h2>
+    <h2 className='subtitulo'>Bienvenido {usuario ? usuario.nombre : 'Invitado'}</h2>
     </section>
+    {usuario?.rol === 'user' && (
       <section className="container">
        
         <form className="form containerFormulario" id="form" onSubmit={hacerEnvio}>
@@ -129,15 +130,15 @@ export function Envio() {
           </div>
           <button id="solicitarEnvio">Solicitar Envio</button>
           <section className="container">
-        {usuario?.rol === 'user' && (
+      
           <div>
             <p>Costo del Envío: ${costo}</p>
           </div>
-        )}
+      
       </section>
         </form>
       </section>
-           
+    )}
       <div className="container">
         <table>
           <thead>
