@@ -31,9 +31,9 @@ export function Envio() {
 
 
   function calcularCosto() {
-    const tarifaPeso = 10; 
+    const tarifaPeso = 50; 
     const tarifaBarco = 50; 
-    const tarifaDistancia = 20; 
+    const tarifaDistancia = 10; 
 
     const costoTotal = (peso * tarifaPeso) + tarifaBarco + tarifaDistancia;
     setCosto(costoTotal);
@@ -156,7 +156,7 @@ export function Envio() {
           <tbody id="envios">
             {enviosFiltrados.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.id_usuario || 'N/A'}</td>
+                <td>{envio.id_usuario || '?'}</td>
                 <td>{index + 1}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>
@@ -174,7 +174,7 @@ export function Envio() {
           <tbody id="envios">
             {envios.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.id_usuario || 'N/A'}</td>
+                <td>{envio.id_usuario || '?'}</td>
                 <td>{index + 1}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>

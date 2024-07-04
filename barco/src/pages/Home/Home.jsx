@@ -13,9 +13,8 @@ export function Home(){
                 <img src="../../../public/assets/img/banner.jpg" alt="Banner" className="img-fluid"/>
             </div>
             <div className="col-md-12">
-                <h1 className="titulo">La Empresa</h1>
+                <h1 className="titulo">Bar.Co Shipping</h1>
                 <h2 className="subtitulo">Invertimos en el país porque tenemos firmes convicciones</h2>
-                <p><strong>Bar.Co Shipping</strong></p>
 <p>En Bar.Co Shipping, estamos profundamente comprometidos con el desarrollo y crecimiento de Argentina. Creemos que invertir en nuestro país no solo fortalece nuestra empresa, sino que también contribuye al bienestar y progreso de la sociedad en su conjunto. Nuestra empresa, con sede en la vibrante ciudad de Buenos Aires, se dedica exclusivamente al transporte de hidrocarburos, desempeñando un papel crucial en la cadena de suministro de energía del país.</p>
 
 <p>Desde nuestra fundación, hemos construido una sólida infraestructura que nos permite ofrecer un servicio de transporte de hidrocarburos que cumple con los más altos estándares internacionales de calidad y seguridad. Cada uno de nuestros esfuerzos está orientado a garantizar que nuestros clientes reciban productos de manera eficiente y segura, apoyando así el suministro energético esencial para el desarrollo económico y social de Argentina.</p>

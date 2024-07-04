@@ -7,6 +7,7 @@ import { Login } from "./pages/Login/Login";
 import { Register } from "./pages/Register/Register";
 import { Logout } from "./pages/Logout/Logout";
 import { Admin } from './data/Admin';
+import { User } from './pages/Users/User';
 import { BrowserRouter ,Routes, Route } from "react-router-dom";
 
 import '../public/assets/css/estilos.css'
@@ -46,6 +47,11 @@ function App() {
     {
       path:"/logout",
       element: <Logout />,
+      name: "Logout",
+    },
+    {
+      path:"/user",
+      element: <User />,
       name: "Logout",
     },
   ]
