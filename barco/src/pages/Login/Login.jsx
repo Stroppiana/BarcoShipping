@@ -7,30 +7,31 @@ export function Login() {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
-  const login = (e) => {
+  const login = async (e) => {
     e.preventDefault();
 
-    let usuarioEncontrado = null;
 
-    const usuarios = JSON.parse(localStorage.getItem('usuarios')) || [];
-    usuarioEncontrado = usuarios.find(user => user.email === email && user.rol === 'user');
-
-    if (!usuarioEncontrado) {
-      const admin = JSON.parse(localStorage.getItem('admin'));
-      if (admin && admin.email === email && admin.rol === 'admin') {
-        usuarioEncontrado = admin;
-        localStorage.setItem('usuarioActual', JSON.stringify(usuarioEncontrado));
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      if(response.ok){
+        alert(`Bienvenido!!!`);
+        setEmail('');
+        setPassword('');
+        navigate('/');
       }
-    } else {
-      localStorage.setItem('usuarioActual', JSON.stringify(usuarioEncontrado));
+
+    }catch(error){
+      console.error('Error inicio de sesion usuario', error);
+      alert('Error inicio de sesion usuario');
     }
 
-    if (usuarioEncontrado && usuarioEncontrado.password === password) {
-      alert(`Bienvenido, ${usuarioEncontrado.nombre}!`);
-      navigate('/');
-    } else {
-      alert('Email o contraseña incorrectos');
-    }
   };
 
   return (
