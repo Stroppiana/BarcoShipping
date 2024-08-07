@@ -21,10 +21,20 @@ export function Login() {
       });
   
       if(response.ok){
+
+        const data = await response.json();
+        const { token, user } = data;
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('usuarioActual', JSON.stringify(user));
+
         alert(`Bienvenido!!!`);
         setEmail('');
         setPassword('');
         navigate('/');
+      }else{
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
       }
 
     }catch(error){

@@ -13,15 +13,55 @@ export function Envio() {
   const [usuario, setUsuario] = useState(null); 
 
 
+  // useEffect(() => {
+
+  //   const user = JSON.parse(localStorage.getItem('usuarioActual'));
+  //   setUsuario(user);
+
+  //   const storedEnvios = JSON.parse(localStorage.getItem('envios')) || [];
+  //   setEnvios(storedEnvios);
+    
+  //   // const fetchEnvios = async () => {
+  //   //     try {
+  //   //       const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
+  //   //       if (response.ok) {
+  //   //         const data = await response.json();
+  //   //         setEnvios(data);
+  //   //       } else {
+  //   //         console.error('Error al obtener envíos');
+  //   //       }
+  //   //     } catch (error) {
+  //   //       console.error('Error al obtener envíos:', error);
+  //   //     }
+  //   //   };
+
+  //   //   fetchEnvios();
+   
+
+  // }, [usuario?.userId, usuario?.rol]);
+
   useEffect(() => {
-
     const user = JSON.parse(localStorage.getItem('usuarioActual'));
-
     setUsuario(user);
 
-    const storedEnvios = JSON.parse(localStorage.getItem('envios')) || [];
-    setEnvios(storedEnvios);
-  }, []);
+    if (user && user.userId) {
+      const fetchEnvios = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/api/envio/user?userId=${user.userId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setEnvios(data);
+          } else {
+            console.error('Error al obtener envíos');
+          }
+        } catch (error) {
+          console.error('Error al obtener envíos:', error);
+        }
+      };
+
+      fetchEnvios();
+    }
+  }, [usuario?.userId]);
 
   useEffect(() => {
     if (peso && barco && puertoOrigen && puertoDestino) {
@@ -35,12 +75,11 @@ export function Envio() {
     const tarifaBarco = 50; 
     const tarifaDistancia = 10; 
 
-    const costoTotal = (peso * tarifaPeso) + tarifaBarco + tarifaDistancia;
+    const costoTotal = (parseInt(peso, 10) * tarifaPeso) + tarifaBarco + tarifaDistancia;
     setCosto(costoTotal);
   }
 
-
-  function hacerEnvio(e) {
+  const hacerEnvio = async (e) =>{
     e.preventDefault();
 
     if (!usuario) {
@@ -52,41 +91,103 @@ export function Envio() {
       alert('Todos los campos son obligatorios');
       return;
     }    
-
     const envio = {
-      id_envio: envios.length + 1,
       cargamento: cargamento,
-      peso: peso,
+      peso: parseInt(peso, 10),  
       barco: barco,
       origen: puertoOrigen,
       destino: puertoDestino,
-      id_usuario: usuario ? usuario.id_user : null,
-      costo: costo
+      costo: parseFloat(costo), 
+      userId: usuario.userId
     };
 
-    const nuevosEnvios = [...envios, envio];
-    setEnvios(nuevosEnvios);
-    localStorage.setItem('envios', JSON.stringify(nuevosEnvios));
+    console.log('Datos enviados:', envio);
+    try{
+      const token = localStorage.getItem('token');
+        if (!token) {
+        throw new Error('Token not found');
+      }
+      const response = await fetch('http://localhost:5000/api/envio', {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(envio)
+      })
 
-    console.log(envio);
+      // if(response.ok){
+      //   alert('Envio registrado exitosamente');
+      //   setCargamento('');
+      //   setPeso('');
+      //   setBarco('');
+      //   setPuertoOrigen('');
+      //   setPuertoDestino('');
+      //   setCosto(0);
 
-    setCargamento('');
-    setPeso('');
-    setBarco('');
-    setPuertoOrigen('');
-    setPuertoDestino('');
-    setCosto(0);
+      //   // const fetchEnvios = async () => {
+      //   //   try {
+      //   //     const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
+      //   //     if (response.ok) {
+      //   //       const data = await response.json();
+      //   //       setEnvios(data);
+      //   //     } else {
+      //   //       console.error('Error al obtener envíos');
+      //   //     }
+      //   //   } catch (error) {
+      //   //     console.error('Error al obtener envíos:', error);
+      //   //   }
+      //   // };
+  
+      //   // fetchEnvios();
+
+      // }
+      
+      if (!response.ok) {
+        const result = await response.json();
+        console.error('Error al registrar el envío:', result);
+        alert(`Error: ${result.error || 'Error desconocido'}`);
+      }else{
+        alert('Envio registrado exitosamente');
+        setCargamento('');
+        setPeso('');
+        setBarco('');
+        setPuertoOrigen('');
+        setPuertoDestino('');
+        setCosto(0);
+        const fetchEnvios = async () => {
+          try {
+            const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
+            if (response.ok) {
+              const data = await response.json();
+              setEnvios(data);
+            } else {
+              console.error('Error al obtener envíos');
+            }
+          } catch (error) {
+            console.error('Error al obtener envíos:', error);
+          }
+        };
+  
+        fetchEnvios();
+      }
+
+    }catch(error){
+      console.error('Error al registrar envio:', error);
+      alert('Error al registrar envio');
+    }
 
   }
 
-   const enviosFiltrados = envios.filter(envio => envio.id_usuario === usuario?.id_user);
+  // const enviosFiltrados = envios.filter(envio => envio.userId === usuario?.userId);
+
+  const enviosFiltrados = usuario?.rol === 'USER' ? envios.filter(envio => envio.userId === usuario.userId) : envios;
 
   return (
     <>
     <section className="container">
-    <h2 className='subtitulo'>Bienvenido {usuario ? usuario.nombre : 'Invitado'}</h2>
+    <h2 className='subtitulo'>Bienvenido {usuario ? usuario.name : 'Invitado'}</h2>
     </section>
-    {usuario?.rol === 'user' && (
+    {usuario?.rol === 'USER' && (
       <section className="container">
        
         <form className="form containerFormulario" id="form" onSubmit={hacerEnvio}>
@@ -153,11 +254,11 @@ export function Envio() {
               <th>COSTO</th>
             </tr>
           </thead>
-          {usuario?.rol === 'user' && (
+          {usuario?.rol === 'USER' && (
           <tbody id="envios">
             {enviosFiltrados.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.id_usuario || '?'}</td>
+                <td>{envio.userId  || '?'}</td>
                 <td>{index + 1}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>
@@ -170,12 +271,12 @@ export function Envio() {
           </tbody>
           )}
 
-        {usuario?.rol === 'admin' && (
+        {usuario?.rol === 'ADMIN' && (
 
           <tbody id="envios">
             {envios.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.id_usuario || '?'}</td>
+                <td>{envio.userId  || '?'}</td>
                 <td>{index + 1}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>
