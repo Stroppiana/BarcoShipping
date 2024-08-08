@@ -11,34 +11,7 @@ export function Envio() {
   const [envios, setEnvios] = useState([]);
   const [costo, setCosto] = useState(0);
   const [usuario, setUsuario] = useState(null); 
-
-
-  // useEffect(() => {
-
-  //   const user = JSON.parse(localStorage.getItem('usuarioActual'));
-  //   setUsuario(user);
-
-  //   const storedEnvios = JSON.parse(localStorage.getItem('envios')) || [];
-  //   setEnvios(storedEnvios);
-    
-  //   // const fetchEnvios = async () => {
-  //   //     try {
-  //   //       const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
-  //   //       if (response.ok) {
-  //   //         const data = await response.json();
-  //   //         setEnvios(data);
-  //   //       } else {
-  //   //         console.error('Error al obtener envíos');
-  //   //       }
-  //   //     } catch (error) {
-  //   //       console.error('Error al obtener envíos:', error);
-  //   //     }
-  //   //   };
-
-  //   //   fetchEnvios();
-   
-
-  // }, [usuario?.userId, usuario?.rol]);
+  const [estadoEnvios, setEstadoEnvios] = useState('SOLICITADO');
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('usuarioActual'));
@@ -47,7 +20,13 @@ export function Envio() {
     if (user && user.userId) {
       const fetchEnvios = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/envio/user?userId=${user.userId}`);
+
+          const endpoint = user?.rol === 'ADMIN'
+          ? 'http://localhost:5000/api/envio'  
+          : `http://localhost:5000/api/envio/user?userId=${user.userId}`;
+                    
+          const response = await fetch(endpoint);
+          
           if (response.ok) {
             const data = await response.json();
             setEnvios(data);
@@ -68,6 +47,19 @@ export function Envio() {
       calcularCosto();
     }
   },);
+
+  useEffect(() => {
+    const intervalo = setInterval(() =>{
+      setEstadoEnvios(estadoEnvio =>{
+        if (estadoEnvio === 'SOLICITADO') return 'EN_PROCESO';
+        if (estadoEnvio === 'EN_PROCESO') return 'FINALIZADO';
+        if (estadoEnvio === 'FINALIZADO') return 'SOLICITADO';
+        return 'SOLICITADO';
+      });
+    }, 5000);
+
+    return () => clearInterval(intervalo);
+  }, []);
 
 
   function calcularCosto() {
@@ -115,33 +107,6 @@ export function Envio() {
         body: JSON.stringify(envio)
       })
 
-      // if(response.ok){
-      //   alert('Envio registrado exitosamente');
-      //   setCargamento('');
-      //   setPeso('');
-      //   setBarco('');
-      //   setPuertoOrigen('');
-      //   setPuertoDestino('');
-      //   setCosto(0);
-
-      //   // const fetchEnvios = async () => {
-      //   //   try {
-      //   //     const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
-      //   //     if (response.ok) {
-      //   //       const data = await response.json();
-      //   //       setEnvios(data);
-      //   //     } else {
-      //   //       console.error('Error al obtener envíos');
-      //   //     }
-      //   //   } catch (error) {
-      //   //     console.error('Error al obtener envíos:', error);
-      //   //   }
-      //   // };
-  
-      //   // fetchEnvios();
-
-      // }
-      
       if (!response.ok) {
         const result = await response.json();
         console.error('Error al registrar el envío:', result);
@@ -156,7 +121,13 @@ export function Envio() {
         setCosto(0);
         const fetchEnvios = async () => {
           try {
-            const response = await fetch(`http://localhost:5000/api/envio/user?userId=${usuario.userId}`);
+            
+            const endpoint = usuario?.rol === 'ADMIN'
+          ? 'http://localhost:5000/api/envio'
+          : `http://localhost:5000/api/envio/user?userId=${usuario.userId}`; 
+                   
+          const response = await fetch(endpoint);
+            
             if (response.ok) {
               const data = await response.json();
               setEnvios(data);
@@ -177,8 +148,6 @@ export function Envio() {
     }
 
   }
-
-  // const enviosFiltrados = envios.filter(envio => envio.userId === usuario?.userId);
 
   const enviosFiltrados = usuario?.rol === 'USER' ? envios.filter(envio => envio.userId === usuario.userId) : envios;
 
@@ -244,28 +213,26 @@ export function Envio() {
         <table>
           <thead>
             <tr>
-              <th>ID USUARIO</th>
               <th>ID ENVIO</th>
               <th>PRODUCTO</th>
               <th>BARCO</th>
-              <th>ID BARCO</th>
               <th>PUERTO ORIGEN</th>
               <th>PUERTO DESTINO</th>
               <th>COSTO</th>
+              <th>ESTADO</th>
             </tr>
           </thead>
           {usuario?.rol === 'USER' && (
           <tbody id="envios">
             {enviosFiltrados.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.userId  || '?'}</td>
-                <td>{index + 1}</td>
+                <td>{envio.id}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>
-                <td>{barcosData.find(b => b.nombre === envio.barco)?.id_barco}</td>
                 <td>{envio.origen}</td>
                 <td>{envio.destino}</td>
                 <td>${envio.costo}</td>
+                <td className={`estado ${estadoEnvios}`}>{estadoEnvios}</td> 
               </tr>
             ))}
           </tbody>
@@ -276,14 +243,13 @@ export function Envio() {
           <tbody id="envios">
             {envios.map((envio, index) => (
               <tr key={index}>
-                <td>{envio.userId  || '?'}</td>
-                <td>{index + 1}</td>
+                <td>{envio.id}</td>
                 <td>{envio.cargamento}</td>
                 <td>{envio.barco}</td>
-                <td>{barcosData.find(b => b.nombre === envio.barco)?.id_barco}</td>
                 <td>{envio.origen}</td>
                 <td>{envio.destino}</td>
                 <td>${envio.costo}</td>
+                <td className={`estado ${estadoEnvios}`}>{estadoEnvios}</td> 
               </tr>
             ))}
           </tbody>

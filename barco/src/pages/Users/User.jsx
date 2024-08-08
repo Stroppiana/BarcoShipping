@@ -3,13 +3,36 @@ import { useState, useEffect } from 'react';
 
 export function User(){
 
-
   const [usuarios, setUsuarios] = useState([]);
 
   useEffect(() => {
-    // Obtenemos los usuarios del localStorage
     const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios')) || [];
     setUsuarios(usuariosGuardados);
+
+    const fetchUsers = async () =>{
+      try{
+        const response = await fetch('http://localhost:5000/api/users',{
+          method:'GET',
+          headers:{
+            'Content-Type': 'application/json'
+          },
+        });
+
+        if(!response.ok){
+          throw new Error('ERROR');
+        }
+
+        const datos = await response.json();
+
+        setUsuarios(datos);
+
+      }catch(error){
+        console.error('Error al obtener usuarios', error);
+      }
+    }
+
+    fetchUsers();
+
   }, []);
 
     return(
@@ -29,8 +52,8 @@ export function User(){
           <tbody>
             {usuarios.map((usuario, index) => (
               <tr key={index}>
-                <td>{usuario.id_user}</td>
-                <td>{usuario.nombre}</td>
+                <td>{usuario.id}</td>
+                <td>{usuario.name}</td>
                 <td>{usuario.email}</td>
                 <td>{usuario.rol}</td>
               </tr>
