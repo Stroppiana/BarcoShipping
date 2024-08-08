@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 export function User(){
 
   const [usuarios, setUsuarios] = useState([]);
+  //const token = localStorage.getItem('token'); 
 
   useEffect(() => {
     const usuariosGuardados = JSON.parse(localStorage.getItem('usuarios')) || [];
@@ -14,7 +15,8 @@ export function User(){
         const response = await fetch('http://localhost:5000/api/users',{
           method:'GET',
           headers:{
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+           // 'Authorization': `Bearer ${token}`, 
           },
         });
 
